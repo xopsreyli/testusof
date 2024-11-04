@@ -1,4 +1,4 @@
-import User from '../../../entities/User.js'
+import User from '../../../entities/User/User.js'
 import bcrypt from 'bcrypt'
 import { SALT_ROUNDS } from "../../../enums/BcryptEnum.js"
 import * as repository from '../../../repositories/user/userRepository.js'
@@ -52,6 +52,9 @@ export const confirmEmail = async data => {
     } catch (e) {
         throw new CustomError('Invalid or expired token', 401)
     }
+
+    const userDBResult = repository.findById(tokenInfo.id)
+    checkIfExists(userDBResult, "User was not found")
 
     await repository.confirmEmail(tokenInfo.id)
 }

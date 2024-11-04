@@ -25,6 +25,20 @@ exports.up = (pgm) => {
     })
     pgm.createIndex('comment_likes', 'user_id')
     pgm.createIndex('comment_likes', 'entity_id')
+
+    pgm.sql(`
+        INSERT INTO comment_likes (user_id, entity_id, type) VALUES
+        (1, 1, 'like'),
+        (2, 1, 'dislike'),
+        (3, 2, 'like'),
+        (4, 3, 'like'),
+        (5, 3, 'dislike'),
+        (1, 4, 'like'),
+        (2, 5, 'like'),
+        (3, 5, 'dislike'),
+        (4, 1, 'like'),
+        (5, 2, 'dislike');
+    `)
 };
 
 exports.down = (pgm) => {

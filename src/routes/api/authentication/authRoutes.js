@@ -90,7 +90,13 @@ router.post(
  *            schema:
  *              $ref: '#/components/schemas/SuccessResponse'
  *      401:
- *        description: Invalid or expired token
+ *        description: Invalid token
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/ErrorResponse'
+ *      404:
+ *        description: User was not found
  *        content:
  *          application/json:
  *            schema:

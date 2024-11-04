@@ -97,7 +97,7 @@ router.get(
         } catch (e) {
             res.status(e.statusCode).json({
                 status: e.statusCode,
-                category: e.message,
+                message: e.message,
             })
         }
     }
@@ -276,6 +276,12 @@ router.post(
  *          application/json:
  *            schema:
  *              $ref: '#/components/schemas/ErrorResponse'
+ *      404:
+ *        description: Category was not found
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/ErrorResponse'
  */
 router.patch(
     '/:id',
@@ -336,18 +342,31 @@ router.patch(
  *          application/json:
  *            schema:
  *              $ref: '#/components/schemas/ErrorResponse'
+ *      404:
+ *        description: Category was not found
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/ErrorResponse'
  */
 router.delete(
     '/:id',
     authenticateToken(true),
     verifyAdmin,
     async (req, res) => {
-        await service.remove(Number(req.params.id))
+        try {
+            await service.remove(Number(req.params.id))
 
-        res.status(200).json({
-            status: 200,
-            message: 'Category was successfully deleted',
-        })
+            res.status(200).json({
+                status: 200,
+                message: 'Category was successfully deleted',
+            })
+        } catch (e) {
+            res.status(e.statusCode).json({
+                status: e.statusCode,
+                message: e.message,
+            })
+        }
     }
 )
 

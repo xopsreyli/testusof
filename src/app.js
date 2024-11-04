@@ -12,6 +12,7 @@ import userRouter from "./routes/api/user/userRoutes.js";
 import postRouter from './routes/api/post/postRoutes.js';
 import categoryRouter from './routes/api/category/categoryRoutes.js';
 import commentRouter from './routes/api/comment/commentRoutes.js';
+import cors from 'cors'
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -24,6 +25,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(join(__dirname, '..', 'public')));
+app.use(cors({
+  origin: process.env.APP_CLIENT_URL
+}))
 
 app.use('/', indexRouter);
 app.use('/api/doc', swaggerUi.serve, swaggerUi.setup(swaggerDocument))

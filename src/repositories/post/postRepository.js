@@ -40,7 +40,7 @@ const andOrWhereQueryInsert = (query, logicToAdd, isWhere) => {
     return query
 }
 
-export const findAll = async (user, ids = null, params = null) => {
+export const findAll = async (user, ids = null, params = {}) => {
     let query = `SELECT * FROM posts`;
     let queryParams = [];
     let queryParamsCounter = 1

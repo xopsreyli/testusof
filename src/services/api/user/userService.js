@@ -1,6 +1,6 @@
 import * as repository from '../../../repositories/user/userRepository.js'
 import CustomError from "../../../errors/CustomError.js"
-import UserDTO from '../../../dto/UserDTO.js'
+import UserDTO from '../../../dto/UserDTO/UserDTO.js'
 import {ADMIN_ROLE, USER_ROLE} from "../../../enums/UserRoleEnum.js"
 import bcrypt from "bcrypt"
 import {SALT_ROUNDS} from "../../../enums/BcryptEnum.js"
@@ -27,10 +27,10 @@ const __dirname = path.dirname(__filename)
 
 const validateParams = params => {
     let result = {}
-    const page = Number(params?.page)
-    result.page = page && page > 0 ? Number(params.page) : 1
-    result.rating = params.rating && params.rating === ASC ? ASC : DESC
-    result.login = params.login.length > 3 ? params.login : null
+    const page = Number(params.page)
+    result.page = page > 0 ? page : 1
+    result.rating = params.rating === ASC ? ASC : DESC
+    result.login = params.login?.length >= 3 ? params.login : null
 
     return result
 }
@@ -49,14 +49,9 @@ export const get = async (id, user) => {
 }
 
 export const getUserPosts = async id => {
-    const [
-        postsDBResult,
-        authorDBResult,
-    ] = await Promise.all([
-        findAllByUser(id),
-        repository.findById(id)
-    ])
-
+    const authorDBResult = await  repository.findById(id)
+    commonService.checkIfExists(authorDBResult, 'User was not found')
+    const  postsDBResult = await findAllByUser(id)
     const postCategoryDBResult = await findPostsCategoriesRelations(postsDBResult.map(p => p.id))
     const categories = await commonService.getEntities(postCategoryDBResult.map(pc => pc.category_id), CATEGORY)
 
@@ -70,6 +65,9 @@ export const getTop = async () => {
 }
 
 export const updateAvatar = async (user, file) => {
+    const userDBResult = await repository.findById(user.id)
+    commonService.checkIfExists(userDBResult, 'User was not found')
+
     await repository.updateAvatar(user.id, file.filename)
 }
 
@@ -77,7 +75,7 @@ export const update = async (data, user, targetId) => {
     commonService.checkUpdateDeletePermissions(user, targetId)
 
     let dbResult = await repository.findById(targetId)
-
+    commonService.checkIfExists(dbResult, 'User was not found')
     let target = buildUser(dbResult)
     target.login = data.login || target.login
     target.password = data.password ? await bcrypt.hash(data.password, SALT_ROUNDS) : target.password
@@ -135,12 +133,17 @@ export const update = async (data, user, targetId) => {
 
 export const remove = async (targetId, user) => {
     commonService.checkUpdateDeletePermissions(user, targetId)
+    const dbResult = await repository.findById(targetId)
+    commonService.checkIfExists(dbResult, 'User was not found')
 
     await repository.remove(targetId)
 }
 
 export const getUserFavoritesPosts = async (user, params) => {
     const upDBResult = await favoritesRepository.findByUser(user)
+    if (upDBResult.length === 0) {
+        return []
+    }
 
-    return getAllPosts(user, upDBResult.map(up => up.post_id), { page: Number(params.page) || 1 })
+    return getAllPosts(user, upDBResult.map(up => up.post_id), params)
 }

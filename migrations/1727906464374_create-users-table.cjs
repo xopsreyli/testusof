@@ -48,7 +48,14 @@ exports.up = async (pgm) => {
 
     const hashedPassword = await bcrypt.hash('AdminPass1234', 10)
 
-    pgm.sql(`INSERT INTO users (login, password, email, role, is_confirmed) VALUES ('admin', '${hashedPassword}', 'admin@gmail.com', 'admin', 'true')`)
+    pgm.sql(`
+        INSERT INTO users (login, password, email, role, is_confirmed) VALUES
+                                                                                      ('admin', '${hashedPassword}', 'admin@gmail.com', 'admin', true),
+                                                                                      ('user1', '${hashedPassword}', 'user1@gmail.com', 'user', true),
+                                                                                      ('user2', '${hashedPassword}', 'user2@gmail.com', 'user', true),
+                                                                                      ('user3', '${hashedPassword}', 'user3@gmail.com', 'user', true),
+                                                                                      ('user4', '${hashedPassword}', 'user4@gmail.com', 'user', true)
+    `)
 };
 
 exports.down = (pgm) => {

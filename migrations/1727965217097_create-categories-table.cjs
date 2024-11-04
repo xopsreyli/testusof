@@ -15,6 +15,15 @@ exports.up = (pgm) => {
           default: 0,
         },
     })
+
+    pgm.sql(`
+        INSERT INTO categories (title, description) VALUES
+        ('Technology', 'Posts related to technology and innovations.'),
+        ('Health', 'Articles focusing on health and wellness topics.'),
+        ('Lifestyle', 'Posts about lifestyle, fashion, and personal development.'),
+        ('Travel', 'Travel stories and tips from around the world.'),
+        ('Education', 'Educational resources and articles on various subjects.')
+    `)
 };
 
 exports.down = (pgm) => {

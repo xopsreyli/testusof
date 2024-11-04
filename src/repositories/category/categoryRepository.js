@@ -26,7 +26,7 @@ export const remove = async id => {
     )
 }
 
-export const findAll = async (ids = null, params = null) => {
+export const findAll = async (ids = null, params = {}) => {
     let query = 'SELECT * FROM categories'
     let queryParams = []
     let queryParamsCounter = 1

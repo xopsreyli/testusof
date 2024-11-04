@@ -265,16 +265,29 @@ router.post(
  *          application/json:
  *            schema:
  *              $ref: '#/components/schemas/CategoriesOfThePostResponse'
+ *      404:
+ *        description: Post was not found
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/ErrorResponse'
  */
 router.get(
     '/:id/categories',
     async (req, res) => {
-        const categories = await service.getPostCategories(Number(req.params.id))
+        try {
+            const categories = await service.getPostCategories(Number(req.params.id))
 
-        res.status(200).json({
-            status: 200,
-            categories: categories,
-        })
+            res.status(200).json({
+                status: 200,
+                categories: categories,
+            })
+        } catch (e) {
+            res.status(e.statusCode).json({
+                status: e.statusCode,
+                message: e.message,
+            })
+        }
     }
 )
 
@@ -420,18 +433,31 @@ router.post(
  *          application/json:
  *            schema:
  *              $ref: '#/components/schemas/ErrorResponse'
+ *      409:
+ *        description: Conflict. Post is already liked
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/ErrorResponse'
  */
 router.post(
     '/:id/like',
     authenticateToken(true),
     validateRequest(createLikeSchema),
     async (req, res) => {
-        await likeService.like(Number(req.params.id), req.body, req.user, POST_TABLE)
+        try {
+            await likeService.like(Number(req.params.id), req.body, req.user, POST_TABLE)
 
-        res.status(200).json({
-            status: 200,
-            message: "Like was successfully added",
-        })
+            res.status(200).json({
+                status: 200,
+                message: "Post was liked",
+            })
+        } catch (e) {
+            res.status(e.statusCode).json({
+                status: e.statusCode,
+                message: e.message,
+            })
+        }
     }
 )
 
@@ -472,17 +498,36 @@ router.post(
  *          application/json:
  *            schema:
  *              $ref: '#/components/schemas/ErrorResponse'
+ *      404:
+ *        description: Post was not found
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/ErrorResponse'
+ *      409:
+ *        description: Post is already in favorites
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/ErrorResponse'
  */
 router.post(
     '/:id/favorite',
     authenticateToken(true),
     async (req, res) => {
-        await service.makeFavorite(Number(req.params.id), req.user)
+        try {
+            await service.makeFavorite(Number(req.params.id), req.user)
 
-        res.status(200).json({
-            status: 200,
-            message: 'Post was successfully added to favorites',
-        })
+            res.status(200).json({
+                status: 200,
+                message: 'Post was successfully added to favorites',
+            })
+        } catch (e) {
+            res.status(e.statusCode).json({
+                status: e.statusCode,
+                message: e.message,
+            })
+        }
     }
 )
 
@@ -523,17 +568,30 @@ router.post(
  *          application/json:
  *            schema:
  *              $ref: '#/components/schemas/ErrorResponse'
+ *      404:
+ *        description: No such post in favorites
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/ErrorResponse'
  */
 router.delete(
     '/:id/favorite',
     authenticateToken(true),
     async (req, res) => {
-        await service.unfavorite(Number(req.params.id), req.user)
+        try {
+            await service.unfavorite(Number(req.params.id), req.user)
 
-        res.status(200).json({
-            status: 200,
-            message: 'Post was successfully removed from favorites',
-        })
+            res.status(200).json({
+                status: 200,
+                message: 'Post was successfully removed from favorites',
+            })
+        } catch (e) {
+            res.status(e.statusCode).json({
+                status: e.statusCode,
+                message: e.message,
+            })
+        }
     }
 )
 
@@ -582,6 +640,12 @@ router.delete(
  *              $ref: '#/components/schemas/ErrorResponse'
  *      403:
  *        description: Forbidden. Token is invalid or user is not admin
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/ErrorResponse'
+ *      404:
+ *        description: Post was not found
  *        content:
  *          application/json:
  *            schema:
@@ -645,6 +709,12 @@ router.patch(
  *          application/json:
  *            schema:
  *              $ref: '#/components/schemas/ErrorResponse'
+ *      404:
+ *        description: Post was not found
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/ErrorResponse'
  */
 router.delete(
     '/:id',
@@ -703,17 +773,30 @@ router.delete(
  *          application/json:
  *            schema:
  *              $ref: '#/components/schemas/ErrorResponse'
+ *      404:
+ *        description: There was no like under this post
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/ErrorResponse'
  */
 router.delete(
     '/:id/like',
     authenticateToken(true),
     async (req, res) => {
-        await likeService.unlike(Number(req.params.id), req.user, POST_TABLE)
+        try {
+            await likeService.unlike(Number(req.params.id), req.user, POST_TABLE)
 
-        res.status(200).json({
-            status: 200,
-            message: 'Like was successfully removed',
-        })
+            res.status(200).json({
+                status: 200,
+                message: 'Like was successfully removed',
+            })
+        } catch (e) {
+            res.status(e.statusCode).json({
+                status: e.statusCode,
+                message: e.message,
+            })
+        }
     }
 )
 

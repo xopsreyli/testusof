@@ -157,18 +157,31 @@ router.get(
  *          application/json:
  *            schema:
  *              $ref: '#/components/schemas/ErrorResponse'
+ *      409:
+ *        description: Conflict. Comment is already liked
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/ErrorResponse'
  */
 router.post(
     '/:id/like',
     authenticateToken(true),
     validateRequest(createLikeSchema),
     async (req, res) => {
-        await likeService.like(Number(req.params.id), req.body, req.user, COMMENT_TABLE)
+        try {
+            await likeService.like(Number(req.params.id), req.body, req.user, COMMENT_TABLE)
 
-        res.status(200).json({
-            status: 200,
-            message: 'Comment was liked',
-        })
+            res.status(200).json({
+                status: 200,
+                message: 'Comment was liked',
+            })
+        } catch (e) {
+            res.status(e.statusCode).json({
+                status: e.statusCode,
+                message: e.comment,
+            })
+        }
     }
 )
 
@@ -215,6 +228,12 @@ router.post(
  *              $ref: '#/components/schemas/ErrorResponse'
  *      403:
  *        description: Forbidden. Token is invalid or user is not admin
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/ErrorResponse'
+ *      404:
+ *        description: Comment was not found
  *        content:
  *          application/json:
  *            schema:
@@ -276,6 +295,12 @@ router.patch(
  *          application/json:
  *            schema:
  *              $ref: '#/components/schemas/ErrorResponse'
+ *      404:
+ *        description: Comment was not found
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/ErrorResponse'
  */
 router.delete(
     '/:id',
@@ -332,17 +357,30 @@ router.delete(
  *          application/json:
  *            schema:
  *              $ref: '#/components/schemas/ErrorResponse'
+ *      404:
+ *        description: There was no like under this comment
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/ErrorResponse'
  */
 router.delete(
     '/:id/like',
     authenticateToken(true),
     async (req, res) => {
-        await likeService.unlike(Number(req.params.id), req.user, COMMENT_TABLE)
+        try {
+            await likeService.unlike(Number(req.params.id), req.user, COMMENT_TABLE)
 
-        res.status(200).json({
-            status: 200,
-            message: 'Comment was unliked',
-        })
+            res.status(200).json({
+                status: 200,
+                message: 'Comment was unliked',
+            })
+        } catch (e) {
+            res.status(e.statusCode).json({
+                status: e.statusCode,
+                message: e.message,
+            })
+        }
     }
 )
 

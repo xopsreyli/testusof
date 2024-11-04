@@ -30,6 +30,16 @@ exports.up = (pgm) => {
         },
     })
     pgm.createIndex('comments', ['user_id', 'post_id'])
+
+    pgm.sql(`
+        INSERT INTO comments (user_id, post_id, content) VALUES
+        (1, 1, 'Great article on technology!'),
+        (2, 1, 'I found this very informative.'),
+        (3, 2, 'Loved the tips on lifestyle!'),
+        (4, 3, 'This travel guide is really helpful.'),
+        (5, 4, 'I totally agree with this health advice!'),
+        (1, 5, 'Education is key to success!');
+    `)
 };
 
 exports.down = (pgm) => {

@@ -91,7 +91,7 @@ router.get(
  *              $ref: '#/components/schemas/ErrorResponse'
  */
 router.get(
-    '/:id',
+    '/:id(\\d+)',
     authenticateToken(false),
     async (req, res) => {
         try {
@@ -135,16 +135,29 @@ router.get(
  *          application/json:
  *            schema:
  *              $ref: '#/components/schemas/PostsInfoResponse'
+ *      404:
+ *        description: User not found
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/ErrorResponse'
  */
 router.get(
     '/:id/posts',
     async (req, res) => {
-        const posts = await service.getUserPosts(Number(req.params.id))
+        try {
+            const posts = await service.getUserPosts(Number(req.params.id))
 
-        res.status(200).json({
-            status: 200,
-            posts: posts,
-        })
+            res.status(200).json({
+                status: 200,
+                posts: posts,
+            })
+        } catch (e) {
+            res.status(e.statusCode).json({
+                status: e.statusCode,
+                message: e.message,
+            })
+        }
     }
 )
 
@@ -160,6 +173,7 @@ router.get(
  *    parameters:
  *      - name: page
  *        in: query
+ *        required: true
  *        description: Pagination page number
  *        schema:
  *          type: integer
@@ -342,6 +356,12 @@ router.post(
  *          application/json:
  *            schema:
  *              $ref: '#/components/schemas/ErrorResponse'
+ *      404:
+ *        description: User not found
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/ErrorResponse'
  */
 router.patch(
     '/avatar',
@@ -349,12 +369,19 @@ router.patch(
     validateRequest(userValidator.updateUserProfilePictureSchema),
     upload.single('profilePicture'),
     async (req, res) => {
-        await service.updateAvatar(req.user, req.file)
+        try {
+            await service.updateAvatar(req.user, req.file)
 
-        res.status(200).json({
-            status: 200,
-            message: 'User info was successfully updated'
-        })
+            res.status(200).json({
+                status: 200,
+                message: 'User info was successfully updated'
+            })
+        } catch (e) {
+            res.status(e.statusCode).json({
+                status: e.statusCode,
+                message: e.message,
+            })
+        }
     }
 )
 
@@ -401,6 +428,12 @@ router.patch(
  *              $ref: '#/components/schemas/ErrorResponse'
  *      403:
  *        description: No permission
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/ErrorResponse'
+ *      404:
+ *        description: User not found
  *        content:
  *          application/json:
  *            schema:
@@ -458,6 +491,12 @@ router.patch(
  *              $ref: '#/components/schemas/SuccessResponse'
  *      403:
  *        description: No permission
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/ErrorResponse'
+ *      404:
+ *        description: User not found
  *        content:
  *          application/json:
  *            schema:

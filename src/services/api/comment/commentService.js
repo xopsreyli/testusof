@@ -1,7 +1,7 @@
 import * as repository from '../../../repositories/comment/commentRepository.js'
 import * as commonService from "../commonService.js"
 import buildComment from "../../../builders/db/buildComment.js"
-import UserDTO from "../../../dto/UserDTO.js"
+import UserDTO from "../../../dto/UserDTO/UserDTO.js"
 import {ACTIVE, INACTIVE} from "../../../enums/StatusEnum.js"
 import {USER} from "../../../enums/EntityTypeEnum.js"
 
@@ -32,6 +32,7 @@ export const create = async (postId, data, user) => {
 
 export const update = async (targetId, data, user) => {
     const dbResult = await repository.findById(targetId)
+    commonService.checkIfExists(dbResult, 'Comment was not found')
     commonService.checkUpdateDeletePermissions(user, dbResult.user_id)
 
     await repository.updateStatus(targetId, data.isActive ? ACTIVE : INACTIVE)
@@ -39,6 +40,7 @@ export const update = async (targetId, data, user) => {
 
 export const remove = async (targetId, user) => {
     const dbResult = await repository.findById(targetId)
+    commonService.checkIfExists(dbResult, 'Comment was not found')
     commonService.checkUpdateDeletePermissions(user, dbResult.user_id)
 
     await repository.remove(targetId)

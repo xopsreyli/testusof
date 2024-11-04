@@ -1,14 +1,15 @@
 import * as repository from '../../../repositories/post/postRepository.js'
-import UserDTO from "../../../dto/UserDTO.js"
+import UserDTO from "../../../dto/UserDTO/UserDTO.js"
 import CustomError from "../../../errors/CustomError.js"
 import { ACTIVE, INACTIVE } from "../../../enums/StatusEnum.js"
 import { ADMIN_ROLE } from "../../../enums/UserRoleEnum.js"
-import Post from "../../../entities/Post.js"
+import Post from "../../../entities/Post/Post.js"
 import buildPost from "../../../builders/db/buildPost.js"
 import * as commonService from "../commonService.js"
 import {CATEGORY, USER} from "../../../enums/EntityTypeEnum.js"
 import { ASC, DESC } from "../../../enums/DBSortingEnum.js"
 import * as favoritesRepository from '../../../repositories/favorites/favoritesRepository.js'
+import {checkIfExists} from "../commonService.js";
 
 const isDateValid = date => {
     const regex = /^\d{4}-\d{2}-\d{2}$/
@@ -18,12 +19,12 @@ const isDateValid = date => {
 
 const validateParams = params => {
     let result = {}
-    const page = Number(params?.page)
-    result.page = page && page > 0 ? Number(params.page) : 1
-    result.rating = params.rating && params.rating === ASC ? ASC : DESC
-    result.from = params.from && isDateValid(params.from) ? params.from : null
-    result.to = params.to && isDateValid(params.to) ? params.to : null
-    result.title = params.title.length > 3 ? params.title : null
+    const page = Number(params.page)
+    result.page = page > 0 ? page : 1
+    result.rating = params.rating === ASC ? ASC : DESC
+    result.from = isDateValid(params.from) ? params.from : null
+    result.to = isDateValid(params.to) ? params.to : null
+    result.title = params.title?.length >= 3 ? params.title : null
 
     if (params.date === ASC || params.date === DESC) {
         result.date = params.date
@@ -74,7 +75,14 @@ export const get = async (id, user) => {
 }
 
 export const getPostCategories = async id => {
+    const dbResult = await repository.findById(id)
+    commonService.checkIfExists(dbResult, 'Post was not found')
+
     const pcDBResult = await repository.findPostsCategoriesRelations([id])
+
+    if (pcDBResult.length === 0) {
+        return []
+    }
 
     return Object.values(await commonService.getEntities(pcDBResult.map(pc => pc.category_id), CATEGORY))
 }
@@ -89,6 +97,7 @@ export const create = async (data, user) => {
 
 export const update = async (targetId, data, user) => {
     const postDBResult = await repository.findById(targetId)
+    commonService.checkIfExists(postDBResult, 'Post was not found')
     const postCategoryDBResult = await repository.findPostsCategoriesRelations([postDBResult.id])
     const [author, categories] = await Promise.all([
         commonService.getAuthor(postDBResult.user_id),
@@ -126,15 +135,26 @@ export const update = async (targetId, data, user) => {
 
 export const remove = async (id, user) => {
     const postDBResult = await repository.findById(id)
+    commonService.checkIfExists(postDBResult, 'Post was not found')
     commonService.checkUpdateDeletePermissions(user, postDBResult.user_id)
 
     await repository.remove(id)
 }
 
 export const makeFavorite = async (id, user) => {
+    const postDBResult = await repository.findById(id)
+    commonService.checkIfExists(postDBResult, 'Post was not found')
+    const dbResult = await favoritesRepository.find(user.id, id)
+    if (dbResult) {
+        throw new CustomError('Post is already in favorites', 409)
+    }
+
     await favoritesRepository.add(user.id, id)
 }
 
 export const unfavorite = async (id, user) => {
+    const dbResult = await favoritesRepository.find(user.id, id)
+    checkIfExists(dbResult, 'There was no such post in favorites')
+
     await favoritesRepository.remove(user.id, id)
 }

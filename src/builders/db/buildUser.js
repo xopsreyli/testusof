@@ -1,4 +1,4 @@
-import User from "../../entities/User.js"
+import User from "../../entities/User/User.js"
 
 export default obj => {
     return new User(

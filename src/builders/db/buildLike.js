@@ -1,4 +1,4 @@
-import Like from "../../entities/Like.js"
+import Like from "../../entities/Like/Like.js"
 
 export default (obj, author) => {
     return new Like(

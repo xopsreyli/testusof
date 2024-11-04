@@ -1,4 +1,4 @@
-import Comment from "../../entities/Comment.js"
+import Comment from "../../entities/Comment/Comment.js"
 
 export default (obj, author) => {
     return new Comment(

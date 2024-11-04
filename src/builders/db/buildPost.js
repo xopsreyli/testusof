@@ -1,4 +1,4 @@
-import Post from "../../entities/Post.js"
+import Post from "../../entities/Post/Post.js"
 
 export default (obj, author, categories) => {
     return new Post(

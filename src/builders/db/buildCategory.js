@@ -1,4 +1,4 @@
-import Category from "../../entities/Category.js"
+import Category from "../../entities/Category/Category.js"
 
 export default (obj) => {
     return new Category(
