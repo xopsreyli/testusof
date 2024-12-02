@@ -1,0 +1,162 @@
+.header {
+  position: fixed;
+  height: 54px;
+  width: 100%;
+  border-bottom: 2px solid var(--primary);
+  background-color: var(--theme-raisin-black);
+  z-index: 10;
+  padding: 0 20px;
+}
+
+.box {
+  height: 100%;
+  width: 100%;
+  max-width: 1264px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+  margin: auto;
+}
+
+.logo {
+  height: 36px;
+}
+
+.search {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+}
+
+.searchSVG {
+  position: absolute;
+  inset: 50% auto auto 8px;
+  width: 28px;
+  transform: translateY(-50%);
+}
+
+.searchSVG path {
+  stroke: var(--theme-white-op80);
+  transition: stroke 0.25s ease-out;
+}
+
+.input {
+  width: 100%;
+  background-color: transparent;
+  border: none;
+  border-bottom: 1px solid var(--theme-white-op80);
+  border-radius: 6px;
+  outline: none;
+  color: var(--theme-white);
+  font-size: 1rem;
+  transition: border-bottom-color 0.25s ease-out;
+  padding: 6px 0 6px 44px;
+}
+
+.input::placeholder {
+  color: var(--theme-white-op80);
+}
+
+.signLinks {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.signLink {
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--primary);
+  border-radius: 5px;
+  box-shadow: 0 0 8px var(--theme-raisin-black) inset;
+  padding: 0 8px;
+  transition: background-color 0.25s linear;
+}
+
+.signLinkText {
+  color: var(--theme-raisin-black);
+  font-size: 1.125rem;
+  font-weight: 700;
+  transition: color 0.25s linear;
+}
+
+.userBox {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 80px;
+}
+
+.role {
+  text-transform: uppercase;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.role::before {
+  content: '[';
+  padding-right: 4px;
+}
+
+.role::after {
+  content: ']';
+  padding-left: 4px;
+}
+
+.role::before,
+.role::after {
+  color: var(--primary);
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.login {
+  color: var(--theme-white);
+}
+
+.avatarBox {
+  display: block;
+  width: 40px;
+  aspect-ratio: 1;
+  border: 2px solid var(--primary);
+  border-radius: 50%;
+  overflow: hidden;
+  transition: all 0.25s linear;
+}
+
+@media screen and (min-width: 1280px) {
+  .signLink:hover {
+    background-color: var(--theme-raisin-black);
+  }
+
+  .signLink:hover .signLinkText {
+    color: var(--primary);
+  }
+
+  .search:hover .searchSVG path {
+    stroke: var(--theme-white);
+  }
+
+  .search:hover .input {
+    border-bottom-color: var(--theme-white);
+  }
+  .search:focus-within .searchSVG path {
+    stroke: var(--primary);
+  }
+
+  .input:focus {
+    border-bottom-color: var(--theme-white);
+  }
+
+  .avatarBox:hover {
+    box-shadow: 0 0 8px var(--primary);
+  }
+}

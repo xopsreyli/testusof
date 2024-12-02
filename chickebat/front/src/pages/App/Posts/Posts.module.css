@@ -1,0 +1,24 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.titleSVG {
+  width: 40px;
+}
+
+.title path {
+  fill: var(--theme-white);
+}
+
+.titleText {
+  text-transform: capitalize;
+}

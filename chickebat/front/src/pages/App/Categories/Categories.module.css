@@ -1,0 +1,24 @@
+.title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 40px;
+}
+
+.titleSVG {
+  width: 40px;
+}
+
+.titleSVG path {
+  fill: var(--theme-white);
+}
+
+.titleText {
+  text-transform: capitalize;
+}
+
+.box {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
